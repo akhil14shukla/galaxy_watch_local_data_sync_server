@@ -9,6 +9,8 @@ const fs = require('fs');
 const healthDataRoutes = require('./routes/healthData');
 const syncRoutes = require('./routes/sync');
 const bluetoothRoutes = require('./routes/bluetooth');
+const iosDataRoutes = require('./routes/iosData'); // iOS data compatibility routes
+const iosHealthRoutes = require('./routes/iosHealth'); // iOS health compatibility routes
 const { initDatabase } = require('./database/init');
 const { logger } = require('./utils/logger');
 const config = require('./config/config');
@@ -92,6 +94,8 @@ class GalaxyWatchSyncServer {
         this.app.use('/api/v1/health-data', healthDataRoutes);
         this.app.use('/api/v1/sync', syncRoutes);
         this.app.use('/api/v1/bluetooth', bluetoothRoutes);
+        this.app.use('/api/v1/data', iosDataRoutes); // iOS data compatibility routes
+        this.app.use('/api/v1/health', iosHealthRoutes); // iOS health compatibility routes
 
         // Root endpoint with API documentation
         this.app.get('/', (req, res) => {
