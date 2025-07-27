@@ -22,7 +22,7 @@ router.get('/summary/:deviceId', async (req, res) => {
         
         // Generate insights if requested
         if (includeInsights === 'true') {
-            summary.insights = await generateHealthInsights(deviceId, startDate);
+            summary.insights = await generateAIInsights(deviceId, 'all');
         }
         
         res.json({
