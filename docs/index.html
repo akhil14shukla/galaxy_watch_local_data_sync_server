@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galaxy Watch Local Data Sync Server - API Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f7fa;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            margin-bottom: 30px;
+            border-radius: 10px;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .section {
+            background: white;
+            margin-bottom: 20px;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .section h2 {
+            color: #4a5568;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+        }
+        
+        .section h3 {
+            color: #2d3748;
+            margin: 20px 0 10px 0;
+            font-size: 1.3rem;
+        }
+        
+        .endpoint {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+        
+        .method {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            margin-right: 10px;
+        }
+        
+        .method.get { background: #48bb78; color: white; }
+        .method.post { background: #4299e1; color: white; }
+        .method.put { background: #ed8936; color: white; }
+        .method.delete { background: #f56565; color: white; }
+        
+        .path {
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 1.1rem;
+            color: #2d3748;
+        }
+        
+        pre {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 10px 0;
+            font-size: 0.9rem;
+        }
+        
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .status-card {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .status-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #4299e1;
+            margin-bottom: 5px;
+        }
+        
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .feature-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #e2e8f0;
+            position: relative;
+            padding-left: 30px;
+        }
+        
+        .feature-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #48bb78;
+            font-weight: bold;
+        }
+        
+        .architecture-diagram {
+            text-align: center;
+            margin: 20px 0;
+            padding: 20px;
+            background: #f7fafc;
+            border-radius: 8px;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+            
+            .section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌌 Galaxy Watch Local Data Sync Server</h1>
+            <p>Privacy-focused health data synchronization between Samsung Galaxy Watch and iPhone</p>
+        </div>
+
+        <div class="section">
+            <h2>🚀 Server Status</h2>
+            <div class="status-grid">
+                <div class="status-card">
+                    <div class="status-value" id="server-status">🟢 Online</div>
+                    <div>Server Status</div>
+                </div>
+                <div class="status-card">
+                    <div class="status-value" id="uptime">Loading...</div>
+                    <div>Uptime</div>
+                </div>
+                <div class="status-card">
+                    <div class="status-value" id="devices">Loading...</div>
+                    <div>Connected Devices</div>
+                </div>
+                <div class="status-card">
+                    <div class="status-value" id="records">Loading...</div>
+                    <div>Health Records</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🏗️ Architecture</h2>
+            <div class="architecture-diagram">
+                <pre style="text-align: left; background: #f7fafc; color: #2d3748; border: 1px solid #e2e8f0;">
+┌─────────────────┐    WiFi/HTTP     ┌─────────────────┐    HealthKit    ┌─────────────────┐
+│ Samsung Galaxy  │ ◄──────────────► │ Local Sync      │ ◄─────────────► │ iPhone (iOS)    │
+│ Watch (WearOS)  │                  │ Server          │                 │ Apple Health    │
+└─────────────────┘                  └─────────────────┘                 └─────────────────┘
+         │                                    │                                   │
+         │           Bluetooth LE             │                                   │
+         └────────────────────────────────────┼───────────────────────────────────┘
+                     (Fallback)               │
+                                              │
+                                     ┌─────────────────┐
+                                     │ SQLite Database │
+                                     │ (Local Storage) │
+                                     └─────────────────┘
+                </pre>
+            </div>
+            <ul class="feature-list">
+                <li><strong>Primary Transport:</strong> Local Wi-Fi Server (REST API)</li>
+                <li><strong>Fallback Transport:</strong> Bluetooth Low Energy (BLE)</li>
+                <li><strong>Data Storage:</strong> Local SQLite database</li>
+                <li><strong>Sync Method:</strong> Timestamp-based stateful synchronization</li>
+                <li><strong>Privacy:</strong> No cloud dependencies, all data local</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>📊 Health Data API</h2>
+            
+            <div class="endpoint">
+                <h3><span class="method post">POST</span><span class="path">/api/v1/health-data</span></h3>
+                <p>Submit health data from WearOS devices</p>
+                <pre>{
+  "deviceId": "galaxy-watch-001",
+  "deviceName": "Samsung Galaxy Watch",
+  "deviceType": "wearos",
+  "dataType": "heart_rate",
+  "records": [
+    {
+      "timestamp": 1703936400000,
+      "value": 72,
+      "unit": "bpm",
+      "metadata": {
+        "accuracy": "high",
+        "source": "sensor"
+      }
+    }
+  ]
+}</pre>
+            </div>
+
+            <div class="endpoint">
+                <h3><span class="method get">GET</span><span class="path">/api/v1/health-data</span></h3>
+                <p>Retrieve health data with filtering options</p>
+                <p><strong>Query Parameters:</strong></p>
+                <ul>
+                    <li><code>deviceId</code> - Filter by device ID</li>
+                    <li><code>dataType</code> - Filter by data type</li>
+                    <li><code>since</code> - Timestamp to get data after</li>
+                    <li><code>until</code> - Timestamp to get data before</li>
+                    <li><code>limit</code> - Maximum records (default: 1000)</li>
+                    <li><code>offset</code> - Pagination offset</li>
+                </ul>
+            </div>
+
+            <div class="endpoint">
+                <h3><span class="method get">GET</span><span class="path">/api/v1/health-data/types</span></h3>
+                <p>Get supported health data types and validation rules</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🔄 Sync Management API</h2>
+            
+            <div class="endpoint">
+                <h3><span class="method post">POST</span><span class="path">/api/v1/sync/register</span></h3>
+                <p>Register a device for synchronization</p>
+                <pre>{
+  "deviceId": "galaxy-watch-001",
+  "deviceName": "Samsung Galaxy Watch",
+  "deviceType": "wearos",
+  "metadata": {
+    "manufacturer": "Samsung",
+    "model": "Galaxy Watch 4"
+  }
+}</pre>
+            </div>
+
+            <div class="endpoint">
+                <h3><span class="method get">GET</span><span class="path">/api/v1/sync/status/:deviceId</span></h3>
+                <p>Get sync status and statistics for a device</p>
+            </div>
+
+            <div class="endpoint">
+                <h3><span class="method get">GET</span><span class="path">/api/v1/sync/data/:deviceId</span></h3>
+                <p>Retrieve new health data for iOS app sync</p>
+                <p><strong>Query Parameters:</strong></p>
+                <ul>
+                    <li><code>since</code> - Get data after this timestamp</li>
+                    <li><code>dataType</code> - Filter by specific data type</li>
+                </ul>
+            </div>
+
+            <div class="endpoint">
+                <h3><span class="method get">GET</span><span class="path">/api/v1/sync/devices</span></h3>
+                <p>List all registered devices with sync statistics</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📡 Bluetooth API</h2>
+            
+            <div class="endpoint">
+                <h3><span class="method get">GET</span><span class="path">/api/v1/bluetooth/status</span></h3>
+                <p>Get Bluetooth service status and connected devices</p>
+            </div>
+
+            <div class="endpoint">
+                <h3><span class="method post">POST</span><span class="path">/api/v1/bluetooth/start</span></h3>
+                <p>Start Bluetooth advertising for fallback sync</p>
+            </div>
+
+            <div class="endpoint">
+                <h3><span class="method post">POST</span><span class="path">/api/v1/bluetooth/stop</span></h3>
+                <p>Stop Bluetooth advertising</p>
+            </div>
+
+            <div class="endpoint">
+                <h3><span class="method post">POST</span><span class="path">/api/v1/bluetooth/test</span></h3>
+                <p>Test Bluetooth functionality and capabilities</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>💊 Supported Health Data Types</h2>
+            <div class="status-grid">
+                <div class="status-card">
+                    <div style="font-size: 1.5rem; margin-bottom: 10px;">❤️</div>
+                    <div><strong>Heart Rate</strong><br>Beats per minute</div>
+                </div>
+                <div class="status-card">
+                    <div style="font-size: 1.5rem; margin-bottom: 10px;">👟</div>
+                    <div><strong>Steps</strong><br>Daily step count</div>
+                </div>
+                <div class="status-card">
+                    <div style="font-size: 1.5rem; margin-bottom: 10px;">😴</div>
+                    <div><strong>Sleep</strong><br>Sleep duration & quality</div>
+                </div>
+                <div class="status-card">
+                    <div style="font-size: 1.5rem; margin-bottom: 10px;">🏃</div>
+                    <div><strong>Activity</strong><br>Workouts & exercise</div>
+                </div>
+                <div class="status-card">
+                    <div style="font-size: 1.5rem; margin-bottom: 10px;">🩸</div>
+                    <div><strong>Blood Pressure</strong><br>Systolic & diastolic</div>
+                </div>
+                <div class="status-card">
+                    <div style="font-size: 1.5rem; margin-bottom: 10px;">📍</div>
+                    <div><strong>GPS Routes</strong><br>Location tracking</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🛠️ Quick Testing</h2>
+            <p>Use these buttons to test the API endpoints:</p>
+            <div style="margin: 20px 0;">
+                <button onclick="testHealthCheck()" style="margin: 5px; padding: 10px 20px; background: #48bb78; color: white; border: none; border-radius: 5px; cursor: pointer;">Test Health Check</button>
+                <button onclick="testDeviceList()" style="margin: 5px; padding: 10px 20px; background: #4299e1; color: white; border: none; border-radius: 5px; cursor: pointer;">List Devices</button>
+                <button onclick="testBluetoothStatus()" style="margin: 5px; padding: 10px 20px; background: #ed8936; color: white; border: none; border-radius: 5px; cursor: pointer;">Bluetooth Status</button>
+            </div>
+            <pre id="test-results" style="min-height: 100px; background: #2d3748;">Click a button above to test API endpoints...</pre>
+        </div>
+    </div>
+
+    <script>
+        // Load server status on page load
+        window.addEventListener('load', function() {
+            loadServerStatus();
+            setInterval(loadServerStatus, 30000); // Update every 30 seconds
+        });
+
+        async function loadServerStatus() {
+            try {
+                const response = await fetch('/health');
+                const data = await response.json();
+                
+                document.getElementById('server-status').textContent = '🟢 Online';
+                document.getElementById('uptime').textContent = formatUptime(data.uptime);
+                
+                // Load additional stats
+                const devicesResponse = await fetch('/api/v1/sync/devices');
+                const devicesData = await devicesResponse.json();
+                document.getElementById('devices').textContent = devicesData.devices?.length || 0;
+                
+            } catch (error) {
+                document.getElementById('server-status').textContent = '🔴 Offline';
+                document.getElementById('uptime').textContent = 'N/A';
+                document.getElementById('devices').textContent = 'N/A';
+                document.getElementById('records').textContent = 'N/A';
+            }
+        }
+
+        function formatUptime(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            return `${hours}h ${minutes}m`;
+        }
+
+        async function testHealthCheck() {
+            const resultElement = document.getElementById('test-results');
+            resultElement.textContent = 'Testing health check endpoint...';
+            
+            try {
+                const response = await fetch('/health');
+                const data = await response.json();
+                resultElement.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                resultElement.textContent = `Error: ${error.message}`;
+            }
+        }
+
+        async function testDeviceList() {
+            const resultElement = document.getElementById('test-results');
+            resultElement.textContent = 'Fetching device list...';
+            
+            try {
+                const response = await fetch('/api/v1/sync/devices');
+                const data = await response.json();
+                resultElement.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                resultElement.textContent = `Error: ${error.message}`;
+            }
+        }
+
+        async function testBluetoothStatus() {
+            const resultElement = document.getElementById('test-results');
+            resultElement.textContent = 'Checking Bluetooth status...';
+            
+            try {
+                const response = await fetch('/api/v1/bluetooth/status');
+                const data = await response.json();
+                resultElement.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                resultElement.textContent = `Error: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+{
+  "name": "galaxy_watch_local_data_sync_server",
+  "version": "1.0.0",
+  "description": "Privacy-focused health data synchronization server between Samsung Galaxy Watch (WearOS) and iPhone (iOS/Apple Health) without relying on cloud services",
+  "main": "index.js",
+  "bin": {
+    "galaxy-watch-sync": "./index.js"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "debug": "nodemon --inspect index.js",
+    "test": "echo \"Tests not implemented yet\" && exit 0",
+    "lint": "echo \"Linting not configured yet\" && exit 0",
+    "build": "echo \"No build process required for Node.js\" && exit 0"
+  },
+  "keywords": [
+    "galaxy-watch",
+    "wearos",
+    "ios",
+    "health-data",
+    "sync",
+    "bluetooth",
+    "local-server",
+    "privacy",
+    "samsung-health",
+    "apple-health"
+  ],
+  "author": "Galaxy Watch Sync Team",
+  "license": "MIT",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/galaxy_watch_local_data_sync_server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-org/galaxy_watch_local_data_sync_server/issues"
+  },
+  "homepage": "https://github.com/your-org/galaxy_watch_local_data_sync_server#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "helmet": "^8.1.0",
+    "morgan": "^1.10.1",
+    "sqlite3": "^5.1.7",
+    "uuid": "^11.1.0",
+    "winston": "^3.17.0",
+    "ws": "^8.18.3"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.0",
+    "nodemon": "^3.1.10"
+  }
+}
