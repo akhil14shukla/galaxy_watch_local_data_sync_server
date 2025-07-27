@@ -124,6 +124,18 @@ function createTables() {
                 data_transferred INTEGER DEFAULT 0,
                 error_message TEXT,
                 metadata JSON
+            )`,
+
+            // Device settings table - store device-specific settings including health goals
+            `CREATE TABLE IF NOT EXISTS device_settings (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                device_id TEXT NOT NULL,
+                setting_type TEXT NOT NULL,
+                setting_value TEXT NOT NULL,
+                updated_at BIGINT NOT NULL,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (device_id) REFERENCES devices (id) ON DELETE CASCADE,
+                UNIQUE(device_id, setting_type)
             )`
         ];
 
@@ -133,7 +145,8 @@ function createTables() {
             'CREATE INDEX IF NOT EXISTS idx_health_data_type_timestamp ON health_data (data_type, timestamp)',
             'CREATE INDEX IF NOT EXISTS idx_devices_last_sync ON devices (last_sync_timestamp)',
             'CREATE INDEX IF NOT EXISTS idx_sync_sessions_device_time ON sync_sessions (device_id, start_time)',
-            'CREATE INDEX IF NOT EXISTS idx_bluetooth_sessions_device ON bluetooth_sessions (device_id, start_time)'
+            'CREATE INDEX IF NOT EXISTS idx_bluetooth_sessions_device ON bluetooth_sessions (device_id, start_time)',
+            'CREATE INDEX IF NOT EXISTS idx_device_settings_device_type ON device_settings (device_id, setting_type)'
         ];
 
         // Create triggers for updated_at timestamp

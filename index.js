@@ -7,7 +7,7 @@
  * Supports cross-platform operation on Windows and macOS.
  */
 
-const GalaxyWatchSyncServer = require('./server/app');
+const GalaxyWatchSyncServer = require('./server/app_enhanced');
 const { logger } = require('./server/utils/logger');
 const config = require('./server/config/config');
 
